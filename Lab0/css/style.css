@@ -1,0 +1,14 @@
+#buttonsContainer {
+    display: flex;
+}
+
+.memoryButton {
+    height: 5em;
+    width: 10em;
+    margin-right: 5px;
+    position: relative;
+}
+
+.scrambledButton {
+    position: absolute;
+}
