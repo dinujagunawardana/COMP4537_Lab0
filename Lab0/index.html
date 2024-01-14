@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Creating Buttons Lab</title>
+    <title>Creating Buttons Lab</title>
+    <link rel="stylesheet" href="./css/style.css">
     <script src='./lang/messages/en/user.js'></script>
-    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-    <p id='question'></p>
-    <input type='number' id='numInput'><button id='goButton'></button>
-    <div id="buttonsContainer"></div>
+    <div id="controlPanel">
+        <p id='question'></p>
+        <input type='number' id='numInput'>
+        <button id='goButton'>Go</button>
+    </div>
+    <div id="gameArea">
+        <div id="buttonsContainer"></div>
+    </div>
+    <script src='./js/script.js'></script>
 </body>
-<script src='./js/script.js'></script>
-
 </html>

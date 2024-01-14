@@ -1,120 +1,148 @@
+/**
+ * GameSetUp class: Handles the setup and game flow of the memory game.
+ */
 class GameSetUp {
   constructor(memoryGame) {
+    // The memoryGame parameter is an instance of the MemoryGame class.
     this.memoryGame = memoryGame;
   }
 
+  // Function to show an alert with a loss message.
   showAlert() {
-    alert("Invalid Input, please enter a number between 3 and 7");
+    alert(invalidInput);
   }
 
+  // Function to generate a random color in hexadecimal format.
   getRandomColor() {
     const letters = "0123456789ABCDEF";
     let color = "#";
     for (let i = 0; i < 6; i++) {
+      // Choose a random character from the 'letters' string and append it to 'color'.
       color += letters[Math.floor(Math.random() * 16)];
     }
-    return color;
+    return color; // Return the generated color.
   }
 
+  // Function to create a specified number of buttons and add them to the container.
   createButtonsInRow(num) {
+    // Get the container element where buttons will be added.
     const container = document.getElementById("buttonsContainer");
-    container.innerHTML = "";
+    container.innerHTML = ""; // Clear any existing content in the container.
 
     for (let i = 0; i < num; i++) {
+      // Create a new button element.
       const button = document.createElement("button");
       button.textContent = i + 1;
-      button.className = "memoryButton";
       button.style.backgroundColor = this.getRandomColor();
+      // Add the button to the container.
       container.appendChild(button);
     }
 
+    // Set the initial order of buttons in the memory game.
     this.memoryGame.setInitialOrder([...Array(num).keys()]);
   }
 
+  // Function to randomly scramble the positions of the buttons.
   scrambleButtons(numScrambles) {
-    const buttons = Array.from(document.getElementsByClassName("memoryButton"));
+    // Get the container of buttons and the control panel.
+    const container = document.getElementById("buttonsContainer");
+    const buttons = Array.from(container.getElementsByTagName("button"));
+    const controlPanel = document.getElementById("controlPanel");
+    const controlPanelRect = controlPanel.getBoundingClientRect();
 
     let scrambleCount = 0;
-
-    const scrambleInterval = setInterval(() => {
-      if (scrambleCount >= numScrambles) {
-        clearInterval(scrambleInterval);
-      } else {
+    const scramble = () => {
+      if (scrambleCount < numScrambles) {
         buttons.forEach((button) => {
-          let newX, newY, overlap;
-          do {
-            overlap = false;
+          button.style.position = "absolute";
+
+          let validPosition = false;
+          let newX, newY;
+          while (!validPosition) {
+            // Generate random positions within the window boundaries.
             const maxX = window.innerWidth - button.offsetWidth;
             const maxY = window.innerHeight - button.offsetHeight;
 
             newX = Math.floor(Math.random() * maxX);
             newY = Math.floor(Math.random() * maxY);
 
-            const newRect = {
-              top: newY,
-              left: newX,
-              right: newX + button.offsetWidth,
-              bottom: newY + button.offsetHeight
-            };
-
-            if (buttons.some(otherButton => otherButton !== button && this.isOverlapping(otherButton, newRect))) {
-              overlap = true;
+            // Check if the new position doesn't overlap with the control panel.
+            if (newY + button.offsetHeight < controlPanelRect.top || newY > controlPanelRect.bottom) {
+              validPosition = true;
             }
-          } while (overlap);
+          }
 
-          button.classList.add("scrambledButton");
+          // Set the new position for the button.
           button.style.left = `${newX}px`;
           button.style.top = `${newY}px`;
         });
         scrambleCount++;
+        setTimeout(scramble, 2000); // Repeat scrambling every 2 seconds.
+      } else {
+        // Re-enable the buttons and start the game after final scramble.
+        buttons.forEach(button => button.disabled = false);
+        this.memoryGame.hideNumbers();
+        this.memoryGame.startGame();
       }
-    }, 1000);
+    };
+    // Start the first scramble after 2 seconds.
+    setTimeout(scramble, 2000);
   }
 
-  isOverlapping(element, rect) {
-    const elRect = element.getBoundingClientRect();
-    return !(rect.left > elRect.right || rect.right < elRect.left || rect.top > elRect.bottom || rect.bottom < elRect.top);
-  }
-
+  // Event handler for the 'Go' button click.
   onGoButtonClick() {
+    // Get the number of buttons to create from the input field.
     const numInput = document.getElementById("numInput");
     const value = parseInt(numInput.value, 10);
     if (value >= 3 && value <= 7) {
-      this.createButtonsInRow(value);
-      this.scrambleButtons(value);
+      this.createButtonsInRow(value); // Create buttons.
+
+      // Disable all buttons temporarily.
+      const buttons = document.getElementById("buttonsContainer").getElementsByTagName("button");
+      Array.from(buttons).forEach(button => button.disabled = true);
+
+      // Start scrambling the buttons after a delay.
       setTimeout(() => {
-        this.memoryGame.startGame();
-      }, 2000 * value);
+        this.scrambleButtons(value);
+      }, value * 1000);
     } else {
-      this.showAlert();
+      this.showAlert(); // Show an alert if the input value is invalid.
     }
   }
 }
 
+/**
+ * MemoryGame class: Manages the logic of the memory game.
+ */
 class MemoryGame {
   constructor(buttonContainerId) {
+    // Initialize game properties.
     this.buttonContainer = document.getElementById(buttonContainerId);
     this.initialOrder = [];
     this.clickedOrder = [];
     this.gameStarted = false;
   }
 
+  // Set the initial order of buttons (indices).
   setInitialOrder(order) {
     this.initialOrder = order;
   }
 
+  // Start the memory game.
   startGame() {
-    this.hideNumbers();
-    this.addClickEvents();
-    this.gameStarted = true;
-    this.clickedOrder = [];
+    this.hideNumbers(); // Hide numbers on buttons.
+    this.addClickEvents(); // Make buttons clickable.
+    this.gameStarted = true; // Mark the game as started.
+    this.clickedOrder = []; // Reset clicked order.
   }
 
+  // Hide numbers on all buttons.
   hideNumbers() {
     const buttons = this.buttonContainer.querySelectorAll("button");
-    buttons.forEach(button => button.textContent = '');
+    buttons.forEach((button) => (button.textContent = ""));
   }
 
+  // Add click events to buttons.
   addClickEvents() {
     const buttons = this.buttonContainer.querySelectorAll("button");
     buttons.forEach((button, index) => {
@@ -122,22 +150,29 @@ class MemoryGame {
     });
   }
 
+  // Handle button click events.
   handleButtonClick(index) {
+    // Ignore clicks if game hasn't started.
     if (!this.gameStarted) return;
+    // Add the clicked button's index to the order array.
     this.clickedOrder.push(index);
+    // Check if the clicked button is in the correct sequence.
     if (this.clickedOrder[this.clickedOrder.length - 1] === this.initialOrder[this.clickedOrder.length - 1]) {
+      // If correct, show the number and check for game completion.
       this.buttonContainer.children[index].textContent = this.initialOrder[index] + 1;
       if (this.clickedOrder.length === this.initialOrder.length) {
-        alert("Correct Order! Well done!");
+        alert(outputMessageWin);
         this.gameStarted = false;
       }
     } else {
+      // If incorrect, end the game and reveal all numbers.
       this.gameStarted = false;
       this.revealAllNumbers();
-      alert("Wrong order!");
+      alert(outputMessageLoss); // Player loses the game.
     }
   }
 
+  // Reveal numbers on all buttons (used when the player loses).
   revealAllNumbers() {
     const buttons = this.buttonContainer.querySelectorAll("button");
     buttons.forEach((button, index) => {
@@ -146,16 +181,15 @@ class MemoryGame {
   }
 }
 
-// Initialize and bind events
+// Initialize the game and setup event listeners.
 const memoryGame = new MemoryGame("buttonsContainer");
 const gameSetUp = new GameSetUp(memoryGame);
 
+// Listen for 'Go' button clicks and start the game setup.
 document.getElementById("goButton").addEventListener("click", () => {
   gameSetUp.onGoButtonClick();
 });
 
-// Assuming these variables are defined elsewhere in your script
-// const questionText = "Your question text here";
-// const goButtonText = "Your button text here";
+// Set up other UI elements (text content).
 document.getElementById("question").textContent = questionText;
 document.getElementById("goButton").textContent = goButtonText;

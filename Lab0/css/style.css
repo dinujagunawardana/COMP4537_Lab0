@@ -1,14 +1,21 @@
 #buttonsContainer {
     display: flex;
+    flex-wrap: wrap;
 }
 
-.memoryButton {
+#buttonsContainer button {
+    color: white;
     height: 5em;
     width: 10em;
     margin-right: 5px;
-    position: relative;
+    margin-bottom: 5px;
 }
 
-.scrambledButton {
-    position: absolute;
+#goButton {
+    height: 26px;
+    width: fit-content;
+}
+
+#numInput {
+    height: 20px;
 }
