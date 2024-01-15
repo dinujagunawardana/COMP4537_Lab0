@@ -12,12 +12,12 @@ class GameSetUp {
     alert(invalidInput);
   }
 
-  // Function to generate a random color in hexadecimal format.
+  // Function to generate a random color in hexadecimal.
   getRandomColor() {
     const letters = "0123456789ABCDEF";
     let color = "#";
     for (let i = 0; i < 6; i++) {
-      // Choose a random character from the 'letters' string and append it to 'color'.
+      // Choose a random character from the letters string and append it to color.
       color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
@@ -27,7 +27,8 @@ class GameSetUp {
   createButtonsInRow(num) {
     // Get the container element where buttons will be added.
     const container = document.getElementById("buttonsContainer");
-    container.innerHTML = ""; // Clear any existing content in the container.
+    // Clear any existing content in the container.
+    container.innerHTML = ""; 
 
     for (let i = 0; i < num; i++) {
       // Create a new button element.
@@ -77,7 +78,8 @@ class GameSetUp {
           button.style.top = `${newY}px`;
         });
         scrambleCount++;
-        setTimeout(scramble, 2000); // Repeat scrambling every 2 seconds.
+        // Repeat scrambling every 2 seconds.
+        setTimeout(scramble, 2000); 
       } else {
         // Re-enable the buttons and start the game after final scramble.
         buttons.forEach(button => button.disabled = false);
@@ -89,13 +91,14 @@ class GameSetUp {
     setTimeout(scramble, 2000);
   }
 
-  // Event handler for the 'Go' button click.
+  // Event handler for the Go button click.
   onGoButtonClick() {
     // Get the number of buttons to create from the input field.
     const numInput = document.getElementById("numInput");
     const value = parseInt(numInput.value, 10);
     if (value >= 3 && value <= 7) {
-      this.createButtonsInRow(value); // Create buttons.
+      // Create buttons.
+      this.createButtonsInRow(value); 
 
       // Disable all buttons temporarily.
       const buttons = document.getElementById("buttonsContainer").getElementsByTagName("button");
@@ -108,7 +111,8 @@ class GameSetUp {
         // Start scrambling the buttons after a delay.
         setTimeout(() => {
           this.scrambleButtons(value);
-          this.scramblingInProgress = false; // Reset the flag after scrambling is complete
+          // Reset the flag after scrambling is complete
+          this.scramblingInProgress = false; 
         }, value * 1000);
       }
     } else {
@@ -129,7 +133,7 @@ class MemoryGame {
     this.gameStarted = false;
   }
 
-  // Set the initial order of buttons (indices).
+  // Set the initial order of buttons.
   setInitialOrder(order) {
     this.initialOrder = order;
   }
@@ -174,11 +178,11 @@ class MemoryGame {
       // If incorrect, end the game and reveal all numbers.
       this.gameStarted = false;
       this.revealAllNumbers();
-      alert(outputMessageLoss); // Player loses the game.
+      alert(outputMessageLoss); 
     }
   }
 
-  // Reveal numbers on all buttons (used when the player loses).
+  // Reveal numbers on all buttons when the player loses.
   revealAllNumbers() {
     const buttons = this.buttonContainer.querySelectorAll("button");
     buttons.forEach((button, index) => {
@@ -191,11 +195,11 @@ class MemoryGame {
 const memoryGame = new MemoryGame("buttonsContainer");
 const gameSetUp = new GameSetUp(memoryGame);
 
-// Listen for 'Go' button clicks and start the game setup.
+// Listen for Go button clicks and start the game setup.
 document.getElementById("goButton").addEventListener("click", () => {
   gameSetUp.onGoButtonClick();
 });
 
-// Set up other UI elements (text content).
+// The text content shown on screen.
 document.getElementById("question").textContent = questionText;
 document.getElementById("goButton").textContent = goButtonText;
