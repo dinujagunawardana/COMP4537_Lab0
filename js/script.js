@@ -20,7 +20,7 @@ class GameSetUp {
       // Choose a random character from the 'letters' string and append it to 'color'.
       color += letters[Math.floor(Math.random() * 16)];
     }
-    return color; 
+    return color;
   }
 
   // Function to create a specified number of buttons and add them to the container.
@@ -101,12 +101,18 @@ class GameSetUp {
       const buttons = document.getElementById("buttonsContainer").getElementsByTagName("button");
       Array.from(buttons).forEach(button => button.disabled = true);
 
-      // Start scrambling the buttons after a delay.
-      setTimeout(() => {
-        this.scrambleButtons(value);
-      }, value * 1000);
+      // Check if the previous scrambling is still in progress
+      if (!this.scramblingInProgress) {
+        this.scramblingInProgress = true;
+
+        // Start scrambling the buttons after a delay.
+        setTimeout(() => {
+          this.scrambleButtons(value);
+          this.scramblingInProgress = false; // Reset the flag after scrambling is complete
+        }, value * 1000);
+      }
     } else {
-      this.showAlert(); // Show an alert if the input value is invalid.
+      this.showAlert();
     }
   }
 }
