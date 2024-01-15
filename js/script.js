@@ -20,7 +20,7 @@ class GameSetUp {
       // Choose a random character from the 'letters' string and append it to 'color'.
       color += letters[Math.floor(Math.random() * 16)];
     }
-    return color; // Return the generated color.
+    return color; 
   }
 
   // Function to create a specified number of buttons and add them to the container.
