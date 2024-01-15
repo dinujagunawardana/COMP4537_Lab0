@@ -1,8 +1,8 @@
 {
     "rewrites": [
       { 
-        "source": "/COMP4537/labs/0/:path(.)",
-        "destination": "/:path"
+        "source": "/COMP4537/labs/0/:path(.*)",
+        "destination": "/:path*"
       }
     ],
     "trailingSlash": true
